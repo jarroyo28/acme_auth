@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 const {
-  models: { User },
+  models: { User, Note },
 } = require("./db");
 const path = require("path");
 
@@ -29,6 +29,19 @@ app.delete("/api/auth", async (req, res, next) => {
     res.send();
   } catch (ex) {
     next(ex);
+  }
+});
+
+// This route is to get a specific user's notes
+app.get("/api/users/:id/notes", async (req, res, next) => {
+  try {
+    // I first find the user via their ID
+    const user = await User.findByPk(req.params.id);
+    // Then I grab the users notes using a magic method
+    const notes = await user.getNotes();
+    res.send(notes);
+  } catch (error) {
+    next(error);
   }
 });
 
