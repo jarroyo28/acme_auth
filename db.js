@@ -36,7 +36,6 @@ User.byToken = async (token) => {
     const verifiedToken = jwt.verify(token, process.env.JWT);
     // The token that is verified has info on it
     // like the usersId
-    console.log(verifiedToken);
     // Using the verified tokens info I find the user
     // and return it
     const user = await User.findByPk(verifiedToken.userId);

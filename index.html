@@ -57,13 +57,17 @@
           super();
           this.state = {
             auth: {},
+            notes: [],
           };
           this.signIn = this.signIn.bind(this);
           this.logout = this.logout.bind(this);
         }
         logout() {
           window.localStorage.removeItem("token");
-          this.setState({ auth: {} });
+          this.setState({
+            auth: {},
+            notes: [],
+          });
         }
         async attemptTokenLogin() {
           const token = window.localStorage.getItem("token");
@@ -73,6 +77,17 @@
                 authorization: token,
               },
             });
+
+            const notes = await axios.get(
+              `/api/users/${response.data.id}/notes`,
+              {
+                headers: {
+                  authorization: token,
+                },
+              }
+            );
+
+            this.setState({ notes: notes.data });
             this.setState({ auth: response.data });
           }
         }
@@ -93,7 +108,13 @@
           } else {
             return (
               <div>
+                {console.log(this.state)}
                 Welcome {auth.username}
+                <ul>
+                  {this.state.notes.map((note) => (
+                    <li key={note.id}>{note.text}</li>
+                  ))}
+                </ul>
                 <button onClick={logout}>Logout</button>
               </div>
             );

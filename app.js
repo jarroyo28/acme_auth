@@ -35,11 +35,19 @@ app.delete("/api/auth", async (req, res, next) => {
 // This route is to get a specific user's notes
 app.get("/api/users/:id/notes", async (req, res, next) => {
   try {
-    // I first find the user via their ID
-    const user = await User.findByPk(req.params.id);
+    // I first find the user via their token
+    const user = await User.byToken(req.headers.authorization);
     // Then I grab the users notes using a magic method
     const notes = await user.getNotes();
-    res.send(notes);
+
+    console.log(user.id);
+    console.log(req.params.id);
+
+    if (user.id == req.params.id) {
+      res.send(notes);
+    } else {
+      res.status(401);
+    }
   } catch (error) {
     next(error);
   }
